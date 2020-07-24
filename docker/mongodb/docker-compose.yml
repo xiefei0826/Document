@@ -1,0 +1,82 @@
+version: "3.7"
+services: 
+  cluster-mongo1:
+    # image: mongo:4.2.2
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    volumes: 
+      - cluster-mongodb1:/data/db
+      - mongoconfig1:/data/configdb
+    networks: 
+      net-mongo:
+        aliases: 
+          - cluster-mongo1
+    hostname: cluster-mongo1
+    ports: 
+      - 27017
+    command: mongod --bind_ip_all --replSet rs0
+  cluster-mongo2:
+    # image: mongo:4.2.2
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    volumes: 
+      - cluster-mongodb2:/data/db
+      - mongoconfig2:/data/configdb
+    networks: 
+      net-mongo:
+        aliases: 
+          - cluster-mongo2
+    hostname: cluster-mongo2
+    ports: 
+      - 27017
+    command: mongod --bind_ip_all --replSet rs0
+  cluster-mongo3:
+    # image: mongo:4.2.2
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    volumes: 
+      - cluster-mongodb3:/data/db
+      - mongoconfig3:/data/configdb
+    networks: 
+      net-mongo:
+        aliases: 
+          - cluster-mongo3
+    hostname: cluster-mongo3
+    ports: 
+      - 27017
+    command: mongod --bind_ip_all --replSet rs0
+  mongo-express:
+    image: mongo-express:0.49.0
+    restart: always
+    ports:
+      - 8081:8081
+    environment: 
+      # ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      # ME_CONFIG_MONGODB_ADMINPASSWORD: xiefei
+      ME_CONFIG_MONGODB_SERVER: cluster-mongo1
+      ME_CONFIG_MONGODB_PORT: 27017
+    networks: 
+      net-mongo:
+networks: 
+  net-mongo:
+    driver: bridge
+    name: net-mongo
+volumes:
+  cluster-mongodb1:
+    name: cluster-mongodb1
+  cluster-mongodb2:
+    name: cluster-mongodb2
+  cluster-mongodb3:
+    name: cluster-mongodb3
+  mongoconfig1:
+    name: mongoconfig1
+  mongoconfig2:
+    name: mongoconfig2
+  mongoconfig3:
+    name: mongoconfig3

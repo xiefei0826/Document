@@ -1,0 +1,70 @@
+version: "3.7"
+services:
+  dbmaster:
+    # image: mastermysql:0.0.1
+    build:
+      context: ./
+      dockerfile: Dockerfile_binlog_master
+    ports:
+      - "3306:3306"
+    networks:
+      mysqlnet:
+        aliases:
+          - db-master
+        ipv4_address: 172.16.238.2
+    volumes:
+      - db-master:/var/lib/mysql
+    hostname: db-master
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  dbsalve:
+    # image: slavemysql:0.0.1
+    build:
+      context: ./
+      dockerfile: Dockerfile_binlog_slave
+    ports:
+      - "3305:3306"
+    networks:
+      mysqlnet:
+        aliases:
+          - db-slave
+        ipv4_address: 172.16.238.3
+    volumes:
+      - db-slave:/var/lib/mysql
+    depends_on:
+      - dbmaster
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+networks:
+  mysqlnet:
+    name: mysqlnet
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
+volumes:
+  db-master:
+    name: db-master
+  db-slave:
+    name:  db-slave

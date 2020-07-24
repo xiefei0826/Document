@@ -1,0 +1,110 @@
+version: "3.7"
+services: 
+  redis-master1:
+    # image: redis:5.0.7
+    build: 
+      context: ./
+      dockerfile: Dockerfile_cluster
+    ports: 
+      - "7000"
+      - "17000"
+    networks: 
+      redis-master:
+        ipv4_address: 172.10.0.11
+    volumes: 
+      -
+        redisdata1:/data
+  redis-master2:
+    # image: redis:5.0.7
+    build: 
+      context: ./
+      dockerfile: Dockerfile_cluster
+    ports: 
+      - "7000"
+      - "17000"
+    networks: 
+      redis-master:
+        ipv4_address: 172.10.0.12
+    volumes: 
+      -
+        redisdata2:/data
+  redis-master3:
+    # image: redis:5.0.7
+    build: 
+      context: ./
+      dockerfile: Dockerfile_cluster
+    ports: 
+      - "7000"
+      - "17000"
+    networks: 
+      redis-master:
+        ipv4_address: 172.10.0.13
+    volumes: 
+      -
+        redisdata3:/data
+  redis-master4:
+    # image: redis:5.0.7
+    build: 
+      context: ./
+      dockerfile: Dockerfile_cluster
+    ports: 
+      - "7000"
+      - "17000"
+    networks: 
+      redis-master:
+        aliases: 
+          - master1
+        ipv4_address: 172.10.0.14
+    volumes: 
+      -
+        redisdata4:/data
+  redis-master5:
+    # image: redis:5.0.7
+    build: 
+      context: ./
+      dockerfile: Dockerfile_cluster
+    ports: 
+      - "7000"
+      - "17000"
+    networks: 
+      redis-master:
+        ipv4_address: 172.10.0.15
+    volumes: 
+      -
+        redisdata5:/data
+  redis-master6:
+    # image: redis:5.0.7
+    build: 
+      context: ./
+      dockerfile: Dockerfile_cluster
+    ports: 
+      - "7000"
+      - "17000"
+    networks: 
+      redis-master:
+        ipv4_address: 172.10.0.16
+    volumes: 
+      -
+        redisdata6:/data
+     
+networks:
+    redis-master: 
+      driver: bridge
+      name: redis-master
+      ipam: 
+        driver: default
+        config: 
+          - subnet: 172.10.0.0/24
+volumes: 
+    redisdata1:
+      name: redisdata1
+    redisdata2:
+      name: redisdata2
+    redisdata3:
+      name: redisdata3
+    redisdata4:
+      name: redisdata4
+    redisdata5:
+      name: redisdata5
+    redisdata6:
+      name: redisdata6

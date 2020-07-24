@@ -1,0 +1,30 @@
+version: "3.7"
+services:
+  db-mysql-single:
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    networks:
+      net-mysql-single:
+        aliases: 
+          - mysql-single
+    volumes:
+      - db-mysql-single:/var/lib/mysql
+    command: ["mysqld","--server-id=3001"]
+    hostname: db-mysql-single
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+networks:
+  net-mysql-single:
+    name: net-mysql-single
+    driver: host
+volumes:
+  db-mgr1:
+    name: db-mysql-single

@@ -1,0 +1,10 @@
+#基础镜像
+FROM redis:5.0.7
+
+#复制
+COPY redis_cluster.conf /usr/local/etc/redis/redis.conf
+# RUN  chmod 777 /usr/local/etc/redis.conf 
+#修复时区
+# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone &&
+#命令
+CMD ["redis-server", "/usr/local/etc/redis/redis.conf"]

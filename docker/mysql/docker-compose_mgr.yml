@@ -1,0 +1,99 @@
+version: "3.7"
+services:
+  mgr1:
+    # image: registry.cn-hangzhou.aliyuncs.com/xf0826/mysql:0.0.3
+    build: 
+      context: ./
+      dockerfile: Dockerfile_mgr_single
+    ports:
+      - "3306"
+      - "33061"
+    networks:
+      net-mgr:
+        ipv4_address: 172.16.238.11
+        aliases: 
+          - mgr1
+    volumes:
+      - db-mgr1:/var/lib/mysql
+    command: ["mysqld","--server-id=3001"]
+    hostname: mgr1
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  mgr2:
+    # image: registry.cn-hangzhou.aliyuncs.com/xf0826/mysql:0.0.3
+    build: 
+      context: ./
+      dockerfile: Dockerfile_mgr_single
+    ports:
+      - "3306"
+      - "33061"
+    networks:
+      net-mgr:
+        ipv4_address: 172.16.238.12
+        aliases: 
+          - mgr2
+    volumes:
+      - db-mgr2:/var/lib/mysql
+    command: ["mysqld","--server-id=3002"]
+    hostname: mgr2
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  mgr3:
+    # image: registry.cn-hangzhou.aliyuncs.com/xf0826/mysql:0.0.3
+    build: 
+      context: ./
+      dockerfile: Dockerfile_mgr_single
+    ports:
+      - "3306"
+      - "33061"
+    networks:
+      net-mgr:
+        ipv4_address: 172.16.238.13
+        aliases: 
+          - mgr3
+    volumes:
+      - db-mgr3:/var/lib/mysql
+    command: ["mysqld","--server-id=3003"]
+    hostname: mgr3
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+networks:
+  net-mgr:
+    name: net-mgr
+    ipam: 
+      driver: default
+      config: 
+        - subnet: "172.16.238.0/24"
+volumes:
+  db-mgr1:
+    name: db-mgr1
+  db-mgr2:
+    name: db-mgr2
+  db-mgr3:
+    name: db-mgr3

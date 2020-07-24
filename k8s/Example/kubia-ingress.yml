@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: external-lb
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: kubia-nodeport
+              servicePort: 80
+      host: kubia.example.com
+

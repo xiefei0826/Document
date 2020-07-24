@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubia-gpu
+
+spec:
+  nodeSelector:
+    master: "true"
+  containers:
+    - name: kubia
+      image: luksa/kubia
+      ports:
+        - containerPort: 8080
+          protocol: TCP

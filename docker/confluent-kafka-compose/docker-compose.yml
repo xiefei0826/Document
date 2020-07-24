@@ -1,0 +1,216 @@
+version: "3.7"
+services:
+  zookeeper1:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zk1
+    networks:
+      zknet:
+        aliases:
+          - zk1
+    volumes:
+      - zk-data-1:/var/lib/zookeeper/data
+      - zk-txn-logs-1:/var/lib/zookeeper/log
+      - zk-secrets-1:/etc/zookeeper/secrets
+    environment:
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zk1:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  zookeeper2:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zk2
+    networks:
+      zknet:
+        aliases:
+          - zk2
+    volumes:
+      - zk-data-2:/var/lib/zookeeper/data
+      - zk-txn-logs-2:/var/lib/zookeeper/log
+      - zk-secrets-2:/etc/zookeeper/secrets
+    environment:
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zk1:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+    deploy:
+      placement:
+        constraints: [node.hostname == s02]
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  zookeeper3:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zk3
+    networks:
+      zknet:
+        aliases:
+          - zk3
+    volumes:
+      - zk-data-3:/var/lib/zookeeper/data
+      - zk-txn-logs-3:/var/lib/zookeeper/log
+      - zk-secrets-3:/etc/zookeeper/secrets
+    environment:
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zk1:2888:3888;2181 server.2=zk2:2888:3888;2181 server.3=zk3:2888:3888;2181
+    deploy:
+      placement:
+        constraints: [node.hostname == s03]
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  kafka1:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka1
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    networks:
+      zknet:
+      kafkanet:
+        aliases:
+          - kafka1
+    volumes:
+      - kafka-data-1:/var/lib/kafka/data
+      - kafka-secrets-1:/etc/kafka/secrets
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zk1:2181,zk2:2181,zk3:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka2
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    networks:
+      zknet:
+      kafkanet:
+        aliases:
+          - kafka2
+    volumes:
+      - kafka-data-2:/var/lib/kafka/data
+      - kafka-secrets-2:/etc/kafka/secrets
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zk1:2181,zk2:2181,zk3:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    deploy:
+      placement:
+        constraints: [node.hostname == s02]
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  kafka3:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka3
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    networks:
+      zknet:
+      kafkanet:
+        aliases:
+          - kafka3
+    volumes:
+      - kafka-data-3:/var/lib/kafka/data
+      - kafka-secrets-3:/etc/kafka/secrets
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zk1:2181,zk2:2181,zk3:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    deploy:
+      placement:
+        constraints: [node.hostname == s03]
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  schema-registry:
+    image: confluentinc/cp-schema-registry
+    hostname: schema-registry
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    networks:
+      kafkanet:
+        aliases:
+          - schemaregistry
+    ports:
+      - "8081:8081"
+    volumes:
+      - schema-registry-secrets:/etc/schema-registry/secrets
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zk1:2181,zk2:2181,zk3:2181"
+
+
+
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  zknet:
+    driver: overlay
+    name: zknet
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
+  kafkanet:
+    driver: overlay
+    name: kafkanet
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.239.0/24"
+volumes:
+  zk-data-1:
+  zk-secrets-1:
+  zk-txn-logs-1:
+
+  zk-data-2:
+  zk-secrets-2:
+  zk-txn-logs-2:
+
+  zk-data-3:
+  zk-secrets-3:
+  zk-txn-logs-3:
+
+  kafka-data-1:
+  kafka-secrets-1:
+
+  kafka-data-2:
+  kafka-secrets-2:
+
+  kafka-data-3:
+  kafka-secrets-3:
+
+  schema-registry-secrets:

@@ -1,0 +1,63 @@
+version: "3.7"
+services:
+  mysqlgtid1:
+    # image: registry.cn-hangzhou.aliyuncs.com/xf0826/mysql:0.0.3
+    build: 
+      context: ./
+      dockerfile: Dockerfile_gtid_master
+    ports:
+      - "3306:3306"
+    networks:
+      net-gtid:
+        aliases: 
+          - gtid1
+    volumes:
+      - db-gtid1:/var/lib/mysql
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  mysqlgtid2:
+    # image: registry.cn-hangzhou.aliyuncs.com/xf0826/mysql:0.0.3
+    build: 
+      context: ./
+      dockerfile: Dockerfile_gtid_slave
+    ports:
+      - "3305:3306"
+    networks:
+      net-gtid:
+        aliases: 
+          - gtid2
+    volumes:
+      - db-gtid2:/var/lib/mysql
+    depends_on: 
+      - mysqlgtid1
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+  
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+networks:
+  net-gtid:
+    name: net-gtid
+volumes:
+  db-gtid1:
+    name: db-gtid1
+  db-gtid2:
+    name: db-gtid2

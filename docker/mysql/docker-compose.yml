@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+  mgr1:
+    image: mysql:8.0.18
+    ports:
+      - "3306:3306"
+      - "33061"
+    networks:
+      net-mgr:
+        ipv4_address: 172.16.238.11
+        aliases: 
+          - mgr1
+    volumes:
+      - db-mgr1:/var/lib/mysql
+    environment: 
+      - MYSQL_ROOT_PASSWORD=xiefei
+    command: ["mysqld","--server-id=3001"]
+    hostname: mgr1
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+networks:
+  net-mgr:
+    name: net-mgr
+    ipam: 
+      driver: default
+      config: 
+        - subnet: "172.16.238.0/24"
+volumes:
+  db-mgr1:
+    name: db-mgr1

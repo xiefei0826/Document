@@ -1,0 +1,8 @@
+DevAndTest.pfx
+Dns: localhost,*.yx.com,*.ctc666.com
+原始证书文件，私钥保护密码：112233，可以个人证书导入一份，受信任的根证书放一份
+
+openssl导出
+
+openssl pkcs12 -in ./DevAndTest.pfx -clcerts -nokeys -out devandtest.crt
+openssl pkcs12 -in ./DevAndTest.pfx -nocerts -nodes -out devandtest.key

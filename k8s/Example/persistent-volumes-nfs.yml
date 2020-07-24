@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-a
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/data/test
+    server: 192.168.1.131
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-b
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/data/test1
+    server: 192.168.1.131
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-c
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/data/test2
+    server: 192.168.1.131

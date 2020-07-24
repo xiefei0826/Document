@@ -1,0 +1,3 @@
+New-SelfSignedCertificate -CertStoreLocation "Cert:\CurrentUser\My" -Subject "CN=DevTest,O=DevAndTestCorp,L=Chengdu,S=Sichuan,C=CN" -FriendlyName "DevAndTest" -DnsName localhost,*.yx.com,*.ctc666.com -NotAfter "2029-12-31 23:59:59" -KeyUsage DataEncipherment,KeyEncipherment,DigitalSignature -KeySpec KeyExchange -HashAlgorithm sha256
+
+New-SelfSignedCertificate -CertStoreLocation "Cert:\CurrentUser\My"

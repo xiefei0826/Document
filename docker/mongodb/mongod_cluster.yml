@@ -1,0 +1,147 @@
+systemLog:
+   verbosity: 3 #  默认日志级别，共0-5个值 
+  #  quiet: <boolean>  #  不建议在生产系统使用，限制输出量。在mongos与mongod下
+   traceAllExceptions: true  #  打印详细日志，以便调试
+  #  syslogFacility: <string> #  将消息记录到syslog时使用的功能级别。您指定的值必须得到操作系统的syslog实现的支持。要使用此选项，必须将systemLog.destination设置为syslog 
+  #  path: <string> #  日志输出路径 
+  #  logAppend: true  #  追加日志输出
+  #  logRotate: <string>   #  重命名日志文件，如果
+  #  destination: <string> #  syslog|console|file 指定日志输出到文件或syslog。 如果不配置则使用标准输出 
+   timeStampFormat: iso8601-local
+systemLog:
+   component:
+      accessControl:
+         verbosity: 0  #  控制组件日志级别
+      command:
+         verbosity: 0  #  命令组件日志级别
+
+      # COMMENT some component verbosity settings omitted for brevity
+
+      replication:
+         verbosity: 0
+         election:
+            verbosity: 0
+         heartbeats:
+            verbosity: 0
+         initialSync:
+            verbosity: 0
+         rollback:
+            verbosity: 0
+      storage:
+         verbosity: 0
+         journal:
+            verbosity: 0
+         recovery:
+            verbosity: 0
+      write:
+         verbosity: 0
+
+processManagement:
+   fork: false #  启用是否在后台运行守护进程
+  #  pidFilePath: <string> #  指定pid文件位置，如果不指定，则不会生成
+  #  timeZoneInfo: /usr/share/zoneinfo  #  指定mongo使用系统时区目录
+cloud:
+   monitoring:
+      free:
+         state: runtime  #  runtime|on|off runtime 在运行时是否运行监控，如果为on 在运行中不能关闭
+         # tags: <string>  #  描述信息的标记
+net:
+   port: 27017
+  #  bindIp: 0.0.0.0
+   bindIpAll: true
+   maxIncomingConnections: 65536
+   wireObjectCheck: true  #  输入验证
+   ipv6: false
+   unixDomainSocket:
+      enabled: true
+      pathPrefix: /tmp
+      filePermissions: 0700
+   tls:
+      # certificateSelector: <string>
+      # clusterCertificateSelector: <string>
+      mode: preferTLS  #  disabled|allowTLS|preferTLS|requireTLS
+      # certificateKeyFile: /data/configdb/certificate.pem
+      # certificateKeyFilePassword: xiefei
+      # clusterFile: <string>
+      # clusterPassword: <string>
+      # CAFile: /data/configdb/
+      clusterCAFile: /data/configdb/server.pem
+      # CRLFile: <string>
+      allowConnectionsWithoutCertificates: true
+      allowInvalidCertificates: true
+      allowInvalidHostnames: true
+      # disabledProtocols: <string>
+      # FIPSMode: <boolean>
+   compression:
+      compressors: snappy,zstd,zlib
+   serviceExecutor: synchronous  #  synchronous|adaptive
+security:
+   # keyFile: <string>
+   clusterAuthMode: x509   #keyFile|sendKeyFile|sendX509|x509
+   authorization: <string>
+   transitionToAuth: <boolean>
+   javascriptEnabled:  <boolean>
+   redactClientLogData: <boolean>
+   clusterIpSourceWhitelist:
+     - <string>
+   sasl:
+      hostName: <string>
+      serviceName: <string>
+      saslauthdSocketPath: <string>
+   enableEncryption: <boolean>
+   encryptionCipherMode: <string>
+   encryptionKeyFile: <string>
+   kmip:
+      keyIdentifier: <string>
+      rotateMasterKey: <boolean>
+      serverName: <string>
+      port: <string>
+      clientCertificateFile: <string>
+      clientCertificatePassword: <string>
+      clientCertificateSelector: <string>
+      serverCAFile: <string>
+   ldap:
+      servers: <string>
+      bind:
+         method: <string>
+         saslMechanisms: <string>
+         queryUser: <string>
+         queryPassword: <string>
+         useOSDefaults: <boolean>
+      transportSecurity: <string>
+      timeoutMS: <int>
+      userToDNMapping: <string>
+      authz:
+         queryTemplate: <string>
+      validateLDAPServerConfig: <boolean>
+storage:
+   dbPath: /data/db
+   # indexBuildRetry: false  #  关闭是删除不完整索引,使用内存时不可用
+   journal:
+      enabled: true
+      commitIntervalMs: 100
+   directoryPerDB: false  #  单独存储每个数据库
+   syncPeriodSecs: 60   # 通过 fsync刷新到文件经过时间，不要在生产系统上修改此值 。
+   engine: wiredTiger   #  wiredTiger|inMemory  存储引擎选项。
+   wiredTiger:
+      engineConfig:
+         # cacheSizeGB: 50%  #    50%|256MB
+         journalCompressor: snappy  #  none|snappy|zlib|zstd(4.2版本才开始使用)
+         directoryForIndexes: false
+         maxCacheOverflowFileSizeGB: 0
+      collectionConfig:
+         blockCompressor: snappy
+      indexConfig:
+         prefixCompression: true
+operationProfiling:
+   mode: off  #  off|slowOp|all   slowOp 慢查询分析器，all 分析所有数据
+   slowOpThresholdMs: 100
+   slowOpSampleRate: 1.0
+replication:
+  #  oplogSizeMB: <int>  #  一般大小为可使用容量的5%。如果一旦创建 ，则不能修改。
+   replSetName: rs0  #  副本集名字，如果连接到不同副本，则每个副本应该有不同名字
+  #  secondaryIndexPrefetch: <string>
+   enableMajorityReadConcern: true
+sharding:
+   clusterRole: configsvr   #  configsvr|shardsvr 配置集群规则 
+   archiveMovedChunks: false
