@@ -21,5 +21,4 @@ metadata:
   labels:
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
-
-#      kubectl -n kube-system get secret admin-token-swlhxsonpath={.data.token}|base64 -d
+#      kubectl -n kube-system get secret admin-token-swlhx -o jsonpath={.data.token}|base64 -d

@@ -42,6 +42,8 @@ spec:
       targetPort: 8443
   selector:
     k8s-app: kubernetes-dashboard
+  externalIPs:
+    - 192.168.1.110
 
 ---
 
@@ -246,6 +248,7 @@ spec:
       targetPort: 8000
   selector:
     k8s-app: dashboard-metrics-scraper
+
 
 ---
 
