@@ -1,1 +1,7 @@
 /.idea/
+/docker/install/*.crt
+/docker/install/*.csr
+/docker/install/*.cert
+/docker/install/*.ext
+/docker/install/*.srl
+/docker/install/*.key
