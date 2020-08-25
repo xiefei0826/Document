@@ -7,13 +7,13 @@ sudo curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | sudo apt-k
 sudo apt-get update
 sudo apt-get install -y  kubeadm 
 
-#sudo kubeadm init --apiserver-advertise-address=192.168.1.131 --pod-network-cidr=10.244.0.0/16 --image-repository=registry.cn-hangzhou.aliyuncs.com/officialproject
+sudo kubeadm init --apiserver-advertise-address=192.168.1.131 --pod-network-cidr=10.244.0.0/16 --image-repository=registry.cn-hangzhou.aliyuncs.com/officialproject
 
-#mkdir -p $HOME/.kube
-#sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-#sudo chown $(id -u):$(id -g) $HOME/.kube/config
-#
-#sudo kubectl apply -f kube-flannel.yml
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+sudo kubectl apply -f kube-flannel.yml
 
 #启用主控机同时作为工作节点
 # kubectl taint nodes --all node-role.kubernetes.io/master-
