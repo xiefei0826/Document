@@ -1,0 +1,329 @@
+---
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zookeeper-data-zk1-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/data/zk1
+    server: 192.168.2.100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-data-zk1-pvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zookeeper-log-zk1-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/log/zk1
+    server: 192.168.2.100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-log-zk1-pvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper-zk1
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper-zk1
+  serviceName: zookeeper-zk1
+  template:
+    metadata:
+      labels:
+        app: zookeeper-zk1
+    spec:
+      volumes:
+        - name: zookeeper-data-zk1
+          persistentVolumeClaim:
+            claimName: zookeeper-data-zk1-pvc
+        - name: zookeeper-log-zk1
+          persistentVolumeClaim:
+            claimName: zookeeper-log-zk1-pvc
+      containers:
+        - name: zookeeper-zk1
+          image: zookeeper:3.6
+          ports:
+            - containerPort: 2181
+          volumeMounts:
+            - mountPath: /data
+              name: zookeeper-data-zk1
+            - mountPath: /datalog
+              name: zookeeper-log-zk1
+          env:
+            - name: ZOO_MY_ID
+              value: "1"
+            - name: ZOO_SERVERS
+              value: server.1=0.0.0.0:2888:3888;2181 server.2=zookeeper-zk2:2888:3888;2181 server.3=zookeeper-zk3:2888:3888;2181
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-zk1
+spec:
+  selector:
+    app: zookeeper-zk1
+  ports:
+    - port: 2181
+      targetPort: 2181
+      nodePort: 32181
+  type: NodePort
+---
+
+
+
+
+---
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zookeeper-data-zk2-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/data/zk2
+    server: 192.168.2.100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-data-zk2-pvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zookeeper-log-zk2-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/log/zk2
+    server: 192.168.2.100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-log-zk2-pvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper-zk2
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper-zk2
+  serviceName: zookeeper-zk2
+  template:
+    metadata:
+      labels:
+        app: zookeeper-zk2
+    spec:
+      volumes:
+        - name: zookeeper-data-zk2
+          persistentVolumeClaim:
+            claimName: zookeeper-data-zk2-pvc
+        - name: zookeeper-log-zk2
+          persistentVolumeClaim:
+            claimName: zookeeper-log-zk2-pvc
+      containers:
+        - name: zookeeper-zk2
+          image: zookeeper:3.6
+          ports:
+            - containerPort: 2181
+          volumeMounts:
+            - mountPath: /data
+              name: zookeeper-data-zk2
+            - mountPath: /datalog
+              name: zookeeper-log-zk2
+          env:
+            - name: ZOO_MY_ID
+              value: "2"
+            - name: ZOO_SERVERS
+              value: server.1=zookeeper-zk1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181 server.3=zookeeper-zk3:2888:3888;2181
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-zk2
+spec:
+  selector:
+    app: zookeeper-zk2
+  ports:
+    - port: 2181
+      targetPort: 2181
+      nodePort: 32182
+  type: NodePort
+---
+
+
+
+
+
+
+---
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zookeeper-data-zk3-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/data/zk3
+    server: 192.168.2.100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-data-zk3-pvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zookeeper-log-zk3-pv
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /nas/log/zk3
+    server: 192.168.2.100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zookeeper-log-zk3-pvc
+spec:
+  resources:
+    requests:
+      storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper-zk3
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper-zk3
+  serviceName: zookeeper-zk3
+  template:
+    metadata:
+      labels:
+        app: zookeeper-zk3
+    spec:
+      volumes:
+        - name: zookeeper-data-zk3
+          persistentVolumeClaim:
+            claimName: zookeeper-data-zk3-pvc
+        - name: zookeeper-log-zk3
+          persistentVolumeClaim:
+            claimName: zookeeper-log-zk3-pvc
+      containers:
+        - name: zookeeper-zk3
+          image: zookeeper:3.6
+          ports:
+            - containerPort: 2181
+          volumeMounts:
+            - mountPath: /data
+              name: zookeeper-data-zk3
+            - mountPath: /datalog
+              name: zookeeper-log-zk3
+          env:
+            - name: ZOO_MY_ID
+              value: "3"
+            - name: ZOO_SERVERS
+              value: server.1=zookeeper-zk1:2888:3888;2181 server.2=zookeeper-zk2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-zk3
+spec:
+  selector:
+    app: zookeeper-zk3
+  ports:
+    - port: 2181
+      targetPort: 2181
+      nodePort: 32183
+  type: NodePort
+---
+
