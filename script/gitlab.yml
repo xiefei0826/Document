@@ -10,7 +10,7 @@ spec:
     storage: 100Mi
   nfs:
     path: /nas/gitlab/config
-    server: dev
+    server: home
 ---
 
 apiVersion: v1
@@ -38,7 +38,7 @@ spec:
     storage: 5Gi
   nfs:
     path: /nas/gitlab/logs
-    server: dev
+    server: home
 ---
 
 apiVersion: v1
@@ -66,7 +66,7 @@ spec:
     storage: 100Gi
   nfs:
     path: /nas/gitlab/data
-    server: dev
+    server: home
 ---
 
 apiVersion: v1
