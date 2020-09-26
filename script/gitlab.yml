@@ -137,10 +137,10 @@ spec:
     - port: 280
       targetPort: 80
       name: http
-    - port: 222
+    - port: 22
       targetPort: 22
       name: ssh
   externalIPs:
-    - 192.168.1.131
+    - 192.168.0.108
   type: NodePort
 
