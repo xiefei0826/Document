@@ -9,7 +9,7 @@ spec:
   capacity:
     storage: 100Mi
   nfs:
-    path: /nas/gitlab/config
+    path: /data/nas/gitlab/config
     server: home
 ---
 
@@ -37,7 +37,7 @@ spec:
   capacity:
     storage: 5Gi
   nfs:
-    path: /nas/gitlab/logs
+    path: /data/nas/gitlab/logs
     server: home
 ---
 
@@ -65,7 +65,7 @@ spec:
   capacity:
     storage: 100Gi
   nfs:
-    path: /nas/gitlab/data
+    path: /data/nas/gitlab/data
     server: home
 ---
 
