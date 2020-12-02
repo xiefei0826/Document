@@ -1,9 +1,10 @@
-sudo tee /etc/apt/sources.list.d/kubernetes.list <<-'EOF'
-deb https://mirrors.aliyun.com/kubernetes/apt kubernetes-xenial main
-EOF
 # 安装k8s
 sudo apt-get update && sudo apt-get install -y apt-transport-https curl
 sudo curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo tee /etc/apt/sources.list.d/kubernetes.list <<-'EOF'
+deb https://mirrors.aliyun.com/kubernetes/apt kubernetes-xenial main
+EOF
+
 sudo apt-get update && sudo apt-get install -y  kubeadm
 
 cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
